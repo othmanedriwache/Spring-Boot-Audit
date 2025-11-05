@@ -10,13 +10,13 @@ spring:
     hibernate:
       ddl-auto: none  # Can be "none", "update", "create", or "create-drop"
     database-platform: org.hibernate.dialect.Oracle12cDialect
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         jdbc:
           lob:
             non_contextual_creation: true
-        format_sql: true
+        format_sql: false
     open-in-view: false  # Optional, for controlling lazy loading
 
 
