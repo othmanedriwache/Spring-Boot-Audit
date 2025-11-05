@@ -1,0 +1,851 @@
+{
+	"info": {
+		"_postman_id": "audit-app-collection",
+		"name": "Oracle Database Audit Application",
+		"description": "Comprehensive API collection for testing @AuditableClass, @AuditableFunction, and @NonAuditableFunction annotations with various scenarios",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Users API",
+			"item": [
+				{
+					"name": "Create User (POST with RequestBody)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"john_doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"SecurePass123\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"phoneNumber\": \"+1234567890\",\n    \"role\": \"USER\",\n    \"status\": \"ACTIVE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"]
+						},
+						"description": "Tests: @AuditableClass, auditable function, inner call to validation, exception on duplicate"
+					}
+				},
+				{
+					"name": "Get User by ID (GET with PathVariable)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "1"]
+						},
+						"description": "Tests: PathVariable, exception when not found, business info logging"
+					}
+				},
+				{
+					"name": "Get All Users (GET - Non-Auditable)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"]
+						},
+						"description": "Tests: @NotAuditableFunction - should NOT be logged"
+					}
+				},
+				{
+					"name": "Get Users by Status (GET with RequestParam)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/status?status=ACTIVE",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "status"],
+							"query": [
+								{
+									"key": "status",
+									"value": "ACTIVE"
+								}
+							]
+						},
+						"description": "Tests: RequestParam, mixed auditable/non-auditable calls"
+					}
+				},
+				{
+					"name": "Search Users (GET with Multiple RequestParams)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/search?keyword=john&includeInactive=false",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "search"],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "john"
+								},
+								{
+									"key": "includeInactive",
+									"value": "false"
+								}
+							]
+						},
+						"description": "Tests: Multiple query parameters"
+					}
+				},
+				{
+					"name": "Update User (PUT with PathVariable and Body)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"John Updated\",\n    \"lastName\": \"Doe Updated\",\n    \"phoneNumber\": \"+9876543210\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "1"]
+						},
+						"description": "Tests: Transaction, Thread.sleep scenario, exception handling"
+					}
+				},
+				{
+					"name": "Suspend User (PATCH with PathVariable)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/1/suspend",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "1", "suspend"]
+						},
+						"description": "Tests: Exception when already suspended, business error logging"
+					}
+				},
+				{
+					"name": "Promote to Admin (PATCH)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/1/promote",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "1", "promote"]
+						},
+						"description": "Tests: Complex logic, multiple inner auditable calls, validation"
+					}
+				},
+				{
+					"name": "Register User (POST with Form Parameters)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "jane_smith"
+								},
+								{
+									"key": "email",
+									"value": "jane@example.com"
+								},
+								{
+									"key": "password",
+									"value": "Password123"
+								},
+								{
+									"key": "firstName",
+									"value": "Jane"
+								},
+								{
+									"key": "lastName",
+									"value": "Smith"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "register"]
+						},
+						"description": "Tests: Form parameters (x-www-form-urlencoded)"
+					}
+				},
+				{
+					"name": "Update Profile (POST with PathVariable and Body)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Smith\",\n    \"phoneNumber\": \"+1122334455\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/1/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "1", "profile"]
+						},
+						"description": "Tests: Mixed PathVariable and RequestBody"
+					}
+				},
+				{
+					"name": "Get Current User (GET with Header)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test-token-12345"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "me"]
+						},
+						"description": "Tests: RequestHeader parameter"
+					}
+				},
+				{
+					"name": "Test Exception - Null Pointer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"null_pointer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/test/exception",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "test", "exception"]
+						},
+						"description": "Tests: Exception scenario - NullPointerException"
+					}
+				},
+				{
+					"name": "Test Exception - Arithmetic",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"arithmetic\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/test/exception",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "test", "exception"]
+						},
+						"description": "Tests: Exception scenario - ArithmeticException (division by zero)"
+					}
+				},
+				{
+					"name": "Test Long Operation (POST with RequestParam)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/test/long-operation?duration=2000",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "test", "long-operation"],
+							"query": [
+								{
+									"key": "duration",
+									"value": "2000"
+								}
+							]
+						},
+						"description": "Tests: Thread.sleep scenario, timing measurement"
+					}
+				},
+				{
+					"name": "Filter Users (GET with Optional Params)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/filter?status=ACTIVE&role=USER",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "filter"],
+							"query": [
+								{
+									"key": "status",
+									"value": "ACTIVE"
+								},
+								{
+									"key": "role",
+									"value": "USER"
+								}
+							]
+						},
+						"description": "Tests: Multiple optional parameters"
+					}
+				}
+			]
+		},
+		{
+			"name": "Products API",
+			"item": [
+				{
+					"name": "Create Product (POST with RequestBody)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Laptop Pro\",\n    \"description\": \"High-performance laptop\",\n    \"price\": 1299.99,\n    \"stockQuantity\": 50,\n    \"sku\": \"LAP-001\",\n    \"brand\": \"TechBrand\",\n    \"status\": \"AVAILABLE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"]
+						},
+						"description": "Tests: @AuditableFunction in non-@AuditableClass service"
+					}
+				},
+				{
+					"name": "Get Product by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "1"]
+						},
+						"description": "Tests: @AuditableFunction annotation"
+					}
+				},
+				{
+					"name": "Get All Products (Not Auditable)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"]
+						},
+						"description": "Tests: No annotation in non-auditable class = not logged"
+					}
+				},
+				{
+					"name": "Search Products (GET with Query)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/search?q=laptop",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "laptop"
+								}
+							]
+						},
+						"description": "Tests: Search with keyword, validation"
+					}
+				},
+				{
+					"name": "Products by Price Range",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/price-range?minPrice=100&maxPrice=2000",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "price-range"],
+							"query": [
+								{
+									"key": "minPrice",
+									"value": "100"
+								},
+								{
+									"key": "maxPrice",
+									"value": "2000"
+								}
+							]
+						},
+						"description": "Tests: Multiple numeric parameters, validation"
+					}
+				},
+				{
+					"name": "Update Stock (PATCH with Params)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/1/stock?quantity=10&operation=ADD",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "1", "stock"],
+							"query": [
+								{
+									"key": "quantity",
+									"value": "10"
+								},
+								{
+									"key": "operation",
+									"value": "ADD"
+								}
+							]
+						},
+						"description": "Tests: Stock management, transaction, exception on insufficient stock"
+					}
+				},
+				{
+					"name": "Apply Discount (PATCH with Body)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"percentage\": \"15.5\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/1/discount",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "1", "discount"]
+						},
+						"description": "Tests: Discount calculation, validation"
+					}
+				},
+				{
+					"name": "Quick Add Product (POST with Form Params)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Wireless Mouse"
+								},
+								{
+									"key": "price",
+									"value": "29.99"
+								},
+								{
+									"key": "stock",
+									"value": "100"
+								},
+								{
+									"key": "description",
+									"value": "Ergonomic wireless mouse"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/quick-add",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "quick-add"]
+						},
+						"description": "Tests: Form parameters"
+					}
+				},
+				{
+					"name": "Test Exception - Invalid Price",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"INVALID_PRICE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/test/exception",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "test", "exception"]
+						},
+						"description": "Tests: Exception scenario with invalid price"
+					}
+				},
+				{
+					"name": "Update Rating",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/1/rating?rating=4.5&reviewCount=120",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "1", "rating"],
+							"query": [
+								{
+									"key": "rating",
+									"value": "4.5"
+								},
+								{
+									"key": "reviewCount",
+									"value": "120"
+								}
+							]
+						},
+						"description": "Tests: Rating update with validation"
+					}
+				}
+			]
+		},
+		{
+			"name": "Orders API",
+			"item": [
+				{
+					"name": "Create Order (POST Complex Transaction)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"id\": 1\n    },\n    \"shippingAddress\": \"123 Main St, City, Country\",\n    \"billingAddress\": \"123 Main St, City, Country\",\n    \"paymentMethod\": \"CREDIT_CARD\",\n    \"shippingCost\": 10.00,\n    \"orderItems\": [\n        {\n            \"product\": {\n                \"id\": 1\n            },\n            \"quantity\": 2\n        },\n        {\n            \"product\": {\n                \"id\": 2\n            },\n            \"quantity\": 1\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders"]
+						},
+						"description": "Tests: Complex transaction, multiple service calls, validation, stock updates"
+					}
+				},
+				{
+					"name": "Get Order by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/orders/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1"]
+						},
+						"description": "Tests: Basic auditable function"
+					}
+				},
+				{
+					"name": "Get User Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/orders/user/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "user", "1"]
+						},
+						"description": "Tests: Cross-service validation call"
+					}
+				},
+				{
+					"name": "Update Order Status (PATCH with Param)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/orders/1/status?status=CONFIRMED",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1", "status"],
+							"query": [
+								{
+									"key": "status",
+									"value": "CONFIRMED"
+								}
+							]
+						},
+						"description": "Tests: Status transition validation, timestamp updates"
+					}
+				},
+				{
+					"name": "Process Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"paymentMethod\": \"CREDIT_CARD\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders/1/payment",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1", "payment"]
+						},
+						"description": "Tests: Thread.sleep scenario, exception handling"
+					}
+				},
+				{
+					"name": "Cancel Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reason\": \"Customer requested cancellation\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders/1/cancel",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1", "cancel"]
+						},
+						"description": "Tests: Complex business logic, stock restoration, validation"
+					}
+				},
+				{
+					"name": "Search Orders (GET with Date Range)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/orders/search?status=PENDING&startDate=2024-01-01T00:00:00&endDate=2024-12-31T23:59:59",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "search"],
+							"query": [
+								{
+									"key": "status",
+									"value": "PENDING"
+								},
+								{
+									"key": "startDate",
+									"value": "2024-01-01T00:00:00"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-12-31T23:59:59"
+								}
+							]
+						},
+						"description": "Tests: DateTime parameters, date validation"
+					}
+				},
+				{
+					"name": "Get Order Tracking (GET with Header)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Request-Id",
+								"value": "req-12345-abcde"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/orders/1/tracking",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1", "tracking"]
+						},
+						"description": "Tests: Custom headers"
+					}
+				},
+				{
+					"name": "Quick Order (POST with Form Params)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "userId",
+									"value": "1"
+								},
+								{
+									"key": "productId",
+									"value": "1"
+								},
+								{
+									"key": "quantity",
+									"value": "2"
+								},
+								{
+									"key": "shippingAddress",
+									"value": "456 Oak Ave"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders/quick",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "quick"]
+						},
+						"description": "Tests: Form parameters"
+					}
+				},
+				{
+					"name": "Order Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/orders/statistics?startDate=2024-01-01T00:00:00&endDate=2024-12-31T23:59:59&groupBy=month",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "statistics"],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2024-01-01T00:00:00"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-12-31T23:59:59"
+								},
+								{
+									"key": "groupBy",
+									"value": "month"
+								}
+							]
+						},
+						"description": "Tests: Complex query with aggregation"
+					}
+				},
+				{
+					"name": "Test Exception - Insufficient Stock",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"scenario\": \"insufficient_stock\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders/test/exception",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "test", "exception"]
+						},
+						"description": "Tests: Exception scenario - insufficient stock"
+					}
+				}
+			]
+		},
+		{
+			"name": "Legacy Database Tests",
+			"item": [
+				{
+					"name": "Submit Form (Original Test)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"test-token-123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/submit",
+							"host": ["{{base_url}}"],
+							"path": ["api", "submit"]
+						},
+						"description": "Original test: Multiple service calls, auditable and non-auditable"
+					}
+				},
+				{
+					"name": "Test Exception (Original)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"test-token-456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/test_exception",
+							"host": ["{{base_url}}"],
+							"path": ["api", "test_exception"]
+						},
+						"description": "Original test: Exception scenario with ArithmeticException"
+					}
+				}
+			]
+		}
+	]
+}

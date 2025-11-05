@@ -1,0 +1,255 @@
+.container-fluid {
+  max-width: 1400px;
+}
+
+.card {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  padding: 1rem 1.5rem;
+}
+
+.detail-item {
+  padding: 0.5rem 0;
+}
+
+.detail-item label {
+  font-weight: 600;
+  color: #495057;
+  margin-right: 0.5rem;
+  display: inline-block;
+  min-width: 100px;
+}
+
+.app-info {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+  border: 1px solid #dee2e6;
+}
+
+/* Graph Container */
+.graph-container {
+  width: 100%;
+  min-height: 600px;
+  background-color: #fafafa;
+  border-radius: 0.5rem;
+  border: 1px solid #dee2e6;
+  overflow: hidden;
+  position: relative;
+}
+
+.graph-legend {
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+  border: 1px solid #dee2e6;
+}
+
+/* Tree Container */
+.tree-container {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+}
+
+.function-node {
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.function-card {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  border-left: 4px solid;
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.function-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.exception-card {
+  background-color: #fff5f5;
+  border-left-width: 5px !important;
+}
+
+.exception-card:hover {
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.function-header {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.function-body {
+  font-size: 0.9rem;
+}
+
+.function-detail {
+  margin-bottom: 0.5rem;
+}
+
+.arguments-list {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+}
+
+.argument-item {
+  padding: 0.25rem 0;
+}
+
+.return-content {
+  padding: 0.5rem;
+  background-color: #e7f3ff;
+  border-radius: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.business-log {
+  padding: 0.5rem;
+  background-color: #fff3cd;
+  border-radius: 0.25rem;
+  margin-top: 0.5rem;
+  border-left: 3px solid #ffc107;
+}
+
+.timing-info {
+  padding-top: 0.5rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.children-container {
+  margin-top: 0.5rem;
+  position: relative;
+}
+
+.children-container::before {
+  content: '';
+  position: absolute;
+  left: -15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #dee2e6;
+}
+
+/* D3 Graph Styles */
+.graph-container svg {
+  display: block;
+}
+
+.graph-container circle {
+  transition: all 0.2s ease;
+}
+
+.graph-container line {
+  transition: all 0.2s ease;
+}
+
+.graph-container text {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Graph tooltip is handled by D3 directly in TypeScript */
+
+/* Table Styles */
+.table-responsive {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.table th {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  z-index: 10;
+}
+
+code {
+  font-size: 0.85rem;
+  color: #d63384;
+  background-color: #f8f9fa;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+}
+
+/* Badge Styles */
+.badge {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Loading Spinner */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .function-node {
+    margin-left: 0 !important;
+  }
+
+  .children-container::before {
+    display: none;
+  }
+
+  .function-card {
+    border-left-width: 3px;
+  }
+
+  .detail-item label {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .graph-container {
+    min-height: 400px;
+  }
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.function-node {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Graph specific animations */
+@keyframes graphFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.graph-container svg {
+  animation: graphFadeIn 0.5s ease-in-out;
+}

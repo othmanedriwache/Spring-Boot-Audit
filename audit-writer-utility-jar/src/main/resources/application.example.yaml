@@ -1,0 +1,6 @@
+audit:
+  service: true             # IS SERVICE ARE AUDITABLE
+  repository: true          # IS REPOSITORY ARE AUDITABLE
+  controller: true          # IS CONTROLLER ARE AUDITABLE
+  exception: true          # IS EXCEPTION ARE AUDITABLE
+  component: true          # IS COMPONENT ARE AUDITABLE

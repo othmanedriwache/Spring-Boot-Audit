@@ -1,0 +1,25 @@
+spring:
+  main:
+    allow-circular-references: true
+  datasource:
+    url: jdbc:oracle:thin:@//localhost:1522/orcl
+    username: othmane
+    password: NewStrongPassword2
+    driver-class-name: oracle.jdbc.OracleDriver
+  jpa:
+    hibernate:
+      ddl-auto: none # Can be "none", "update", "create", or "create-drop"
+    database-platform: org.hibernate.dialect.Oracle12cDialect
+    show-sql: true
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        format_sql: true
+    open-in-view: false  # Optional, for controlling lazy loading
+
+audit:
+  chunkSize : 200000
+scheduler:
+  persist-log-dump-rate: 20000

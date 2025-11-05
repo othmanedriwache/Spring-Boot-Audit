@@ -1,0 +1,165 @@
+<div class="http-request-container">
+  <div class="header-section">
+    <div class="title-row">
+      <button class="btn btn-back" (click)="backToApplications()">
+        <i class="fa fa-arrow-left"></i> Back to Applications
+      </button>
+      <h1 class="page-title">
+        <i class="fa fa-list-alt"></i>
+        HTTP Requests
+        <span *ngIf="currentApplicationName" class="app-badge">{{ currentApplicationName }}</span>
+      </h1>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn-secondary export-btn" (click)="exportToCsv()">
+        <i class="fa fa-download"></i> Export CSV
+      </button>
+      <button class="btn btn-info refresh-btn" (click)="searchHttpRequests()">
+        <i class="fa fa-sync"></i> Refresh
+      </button>
+    </div>
+  </div>
+
+  <div class="search-section">
+    <h5 class="section-title">
+      <i class="fa fa-filter"></i> Search Filters
+    </h5>
+
+    <div class="filter-row">
+      <div class="filter-field">
+        <label for="fieldSelect">Field</label>
+        <select
+          id="fieldSelect"
+          class="form-control"
+          [(ngModel)]="selectedField"
+          (change)="onFieldChange()">
+          <option *ngFor="let field of searchableFields" [value]="field.key">
+            {{ field.key }} ({{ field.type }})
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="operationSelect">Operation</label>
+        <select
+          id="operationSelect"
+          class="form-control"
+          [(ngModel)]="selectedOperation">
+          <option *ngFor="let op of operations" [value]="op.value">
+            {{ op.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-field flex-grow">
+        <label for="searchValue">
+          Value
+          <span *ngIf="isNumericField() && selectedField === 'duration'" class="field-hint">(in ms)</span>
+        </label>
+
+        <!-- Text input for String, Table, and Application Name types -->
+        <input
+          *ngIf="isStringField() || selectedField === 'applicationInstance' || selectedField === 'applicationName'"
+          id="searchValue"
+          type="text"
+          class="form-control"
+          [class.is-invalid]="validationError"
+          [(ngModel)]="searchValue"
+          (keyup.enter)="addFilter()"
+          [placeholder]="'Enter search value'"
+          autocomplete="off">
+
+        <!-- Number input for Integer fields -->
+        <input
+          *ngIf="isNumericField()"
+          id="searchValue"
+          type="number"
+          class="form-control"
+          [class.is-invalid]="validationError"
+          [(ngModel)]="searchValue"
+          (keyup.enter)="addFilter()"
+          [placeholder]="selectedField === 'duration' ? 'e.g., 1000' : 'Enter numeric value'"
+          [min]="MIN_INTEGER_VALUE"
+          [max]="MAX_INTEGER_VALUE"
+          step="any"
+          autocomplete="off">
+
+        <!-- Datetime input for LocalDateTime fields -->
+        <input
+          *ngIf="isDateTimeField()"
+          id="searchValue"
+          type="datetime-local"
+          class="form-control"
+          [class.is-invalid]="validationError"
+          [(ngModel)]="searchValue"
+          (keyup.enter)="addFilter()"
+          autocomplete="off">
+
+        <div *ngIf="validationError" class="error-message">
+          {{ validationError }}
+        </div>
+      </div>
+
+      <div class="filter-field">
+        <label>&nbsp;</label>
+        <button
+          class="btn btn-primary w-100"
+          (click)="addFilter()"
+          [disabled]="!selectedField || !searchValue || validationError">
+          <i class="fa fa-plus"></i> Add Filter
+        </button>
+      </div>
+    </div>
+
+    <div class="active-filters" *ngIf="activeFilters.length > 0">
+      <div class="filters-header">
+        <h6>Active Filters:</h6>
+        <button class="btn btn-sm btn-danger" (click)="clearAllFilters()">
+          <i class="fa fa-times"></i> Clear All
+        </button>
+      </div>
+      <div class="filter-chips">
+        <span
+          *ngFor="let filter of activeFilters; let i = index"
+          class="filter-chip">
+          <strong>{{ getFieldLabel(filter.filterKey) }}</strong>
+          <span class="operation">{{ getOperationLabel(filter.operation) }}</span>
+          <span class="value">"{{ getFilterDisplayValue(filter) }}"</span>
+          <button
+            type="button"
+            class="remove-btn"
+            (click)="removeFilter(i)">
+            <i class="fa fa-times"></i>
+          </button>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stats-info">
+      <span class="stat-badge">
+        <i class="fa fa-database"></i>
+        Total: {{ totalElements }}
+      </span>
+      <span class="stat-badge">
+        <i class="fa fa-file"></i>
+        Page {{ currentPage + 1 }} of {{ totalPages }}
+      </span>
+    </div>
+  </div>
+
+  <div class="grid-container">
+    <ag-grid-angular
+      style="width: 100%; height: 100%;"
+      class="ag-theme-alpine"
+      [rowData]="rowData"
+      [columnDefs]="columnDefs"
+      [defaultColDef]="defaultColDef"
+      [pagination]="false"
+      [animateRows]="true"
+      (gridReady)="onGridReady($event)"
+    ></ag-grid-angular>
+  </div>
+</div>

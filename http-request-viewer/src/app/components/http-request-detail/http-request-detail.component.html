@@ -1,0 +1,249 @@
+<div class="container-fluid mt-4">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3">Loading request details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="alert alert-danger" role="alert">
+    <i class="fa fa-exclamation-triangle"></i> {{ error }}
+    <button class="btn btn-primary ms-3" (click)="goBack()">
+      <i class="fa fa-arrow-left"></i> Back to List
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="requestDetail && !loading">
+    <!-- Header -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">HTTP Request Details</h3>
+        <button class="btn btn-light btn-sm" (click)="goBack()">
+          <i class="fa fa-arrow-left"></i> Back to List
+        </button>
+      </div>
+
+      <div class="card-body">
+        <!-- Request Summary and Headers in Two Columns -->
+        <div class="row g-4">
+          <!-- Left Column: HTTP Request Details -->
+          <div class="col-md-6">
+            <h5 class="mb-3">Request Information</h5>
+            <div class="detail-item">
+              <label>Method:</label>
+              <span class="badge bg-primary">{{ requestDetail.method }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Status:</label>
+              <span class="badge bg-{{ getStatusClass(requestDetail.status) }}">
+                {{ requestDetail.status }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <label>URL:</label>
+              <span class="text-break">{{ requestDetail.url }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Host:</label>
+              <span>{{ requestDetail.host }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Duration:</label>
+              <span class="badge bg-info">{{ formatDuration(requestDetail.duration) }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Input Date:</label>
+              <span>{{ requestDetail.inputDate }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Output Date:</label>
+              <span>{{ requestDetail.outputDate }}</span>
+            </div>
+
+            <!-- Application Info -->
+            <div class="mt-4" *ngIf="requestDetail.applicationInstance">
+              <h5>Application Information</h5>
+              <div class="app-info">
+                <span class="badge bg-secondary">
+                  {{ requestDetail.applicationInstance.application.name }}
+                  ({{ requestDetail.applicationInstance.application.version }})
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Headers -->
+          <div class="col-md-6">
+            <h5 class="mb-3">Headers</h5>
+            <div *ngIf="requestDetail.headers && requestDetail.headers.length > 0">
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                  <thead>
+                  <tr>
+                    <th>Header</th>
+                    <th>Content</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let header of requestDetail.headers">
+                    <td><strong>{{ header.header }}</strong></td>
+                    <td class="text-break">{{ header.content }}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div *ngIf="!requestDetail.headers || requestDetail.headers.length === 0" class="text-muted">
+              No headers available
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Parameters -->
+    <div class="card mb-4" *ngIf="requestDetail.parameters && requestDetail.parameters.length > 0">
+      <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0">Parameters</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered">
+            <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Content</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let param of requestDetail.parameters">
+              <td><strong>{{ param.parameter }}</strong></td>
+              <td>{{ param.content }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Function Execution Section with Toggle Button -->
+    <div class="card mb-4" *ngIf="requestDetail.functionRequests && requestDetail.functionRequests.length > 0">
+      <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Function Execution Tree</h5>
+        <button class="btn btn-light btn-sm" (click)="toggleGraph()">
+          <i class="fa" [ngClass]="showGraph ? 'fa-list' : 'fa-project-diagram'"></i>
+          {{ showGraph ? 'Show Tree View' : 'Show Graph View' }}
+        </button>
+      </div>
+
+      <!-- Graph View -->
+      <div class="card-body" *ngIf="showGraph">
+        <div class="graph-legend mb-3">
+          <span class="badge me-2" style="background-color: #007bff;">CONTROLLER</span>
+          <span class="badge me-2" style="background-color: #28a745;">SERVICE</span>
+          <span class="badge me-2" style="background-color: #17a2b8;">REPOSITORY</span>
+          <span class="badge me-2" style="background-color: #dc3545;">EXCEPTION</span>
+          <span class="badge" style="background-color: #6c757d;">OTHER</span>
+        </div>
+        <div #graphContainer class="graph-container"></div>
+      </div>
+
+      <!-- Tree View -->
+      <div class="card-body" *ngIf="!showGraph">
+        <div class="tree-container">
+          <ng-container *ngFor="let func of requestDetail.functionRequests">
+            <ng-container *ngTemplateOutlet="functionNode; context: { $implicit: func, level: 0 }"></ng-container>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Function Node Template (Recursive) -->
+<ng-template #functionNode let-func let-level="level">
+  <div class="function-node" [style.margin-left.px]="level * 30">
+    <div class="function-card"
+         [class.exception-card]="isException(func)"
+         [style.border-left-color]="getTypeColor(func.type)">
+      <div class="function-header">
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="flex-grow-1">
+            <span class="badge" [style.background-color]="getTypeColor(func.type)">
+              {{ func.type }}
+            </span>
+            <strong class="ms-2">{{ func.functionName }}</strong>
+            <span *ngIf="isException(func)" class="ms-2 text-danger">
+              <i class="fa fa-exclamation-triangle"></i> Exception Thrown
+            </span>
+          </div>
+          <span class="badge bg-info">{{ formatDuration(func.duration) }}</span>
+        </div>
+      </div>
+
+      <div class="function-body">
+        <!-- Exception Message (if this is an exception node) -->
+        <div *ngIf="isException(func) && func.returnContent" class="alert alert-danger mb-3">
+          <strong><i class="fa fa-bug"></i> Exception Details:</strong>
+          <div class="mt-2">{{ func.returnContent }}</div>
+        </div>
+
+        <div class="function-detail" *ngIf="func.packagePath">
+          <small class="text-muted">Package:</small>
+          <code class="ms-2">{{ func.packagePath }}</code>
+        </div>
+        <div class="function-detail" *ngIf="func.returnType">
+          <small class="text-muted">Return Type:</small>
+          <code class="ms-2">{{ func.returnType }}</code>
+        </div>
+
+        <!-- Arguments -->
+        <div *ngIf="func.arguments && func.arguments.length > 0" class="mt-2">
+          <small class="text-muted">Arguments:</small>
+          <div class="arguments-list">
+            <div *ngFor="let arg of func.arguments" class="argument-item">
+              <span class="badge bg-light text-dark">{{ arg.type }}</span>
+              <code class="ms-2">{{ arg.content }}</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Return Content (only for non-exception nodes) -->
+        <div *ngIf="func.returnContent && !isException(func)" class="mt-2">
+          <small class="text-muted">Return Value:</small>
+          <div class="return-content">
+            <code>{{ func.returnContent }}</code>
+          </div>
+        </div>
+
+        <!-- Business Requests within function -->
+        <div *ngIf="func.businessRequests && func.businessRequests.length > 0" class="mt-2">
+          <small class="text-muted">Business Logs:</small>
+          <div *ngFor="let business of func.businessRequests" class="business-log">
+            <span class="badge bg-{{ getBusinessTypeClass(business.type) }}">{{ business.type }}</span>
+            <span class="ms-2">{{ business.content }}</span>
+          </div>
+        </div>
+
+        <!-- Timing Info -->
+        <div class="timing-info mt-2">
+          <small class="text-muted">
+            <i class="fa fa-clock"></i>
+            Input: {{ func.inputDate }} |
+            Output: {{ func.outputDate }}
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recursive Children -->
+    <div *ngIf="func.children && func.children.length > 0" class="children-container">
+      <ng-container *ngFor="let child of func.children">
+        <ng-container *ngTemplateOutlet="functionNode; context: { $implicit: child, level: level + 1 }"></ng-container>
+      </ng-container>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,217 @@
+<div class="application-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <h1 class="page-title">
+      <i class="fa fa-desktop"></i>
+      Application Management
+    </h1>
+
+    <div class="action-buttons">
+      <button class="btn btn-primary" (click)="openCreateModal()">
+        <i class="fa fa-plus"></i> Create New Application
+      </button>
+      <button class="btn btn-info" (click)="refreshApplications()" [disabled]="isLoading">
+        <i class="fa fa-sync" [class.fa-spin]="isLoading"></i> Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stats-info">
+      <span class="stat-badge">
+        <i class="fa fa-database"></i>
+        Total Applications: {{ rowData.length }}
+      </span>
+      <span class="stat-badge">
+        <i class="fa fa-server"></i>
+        Total Instances: {{ getTotalInstances() }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Grid Container -->
+  <div class="grid-container">
+    <ag-grid-angular
+      style="width: 100%; height: 100%;"
+      class="ag-theme-alpine"
+      [rowData]="rowData"
+      [columnDefs]="columnDefs"
+      [defaultColDef]="defaultColDef"
+      [pagination]="true"
+      [paginationPageSize]="20"
+      [paginationPageSizeSelector]="[10, 20, 50, 100]"
+      [animateRows]="true"
+      (gridReady)="onGridReady($event)"
+    ></ag-grid-angular>
+  </div>
+
+  <!-- Create Application Modal -->
+  <div class="modal-overlay" *ngIf="showCreateModal" (click)="closeCreateModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>
+          <i class="fa fa-plus-circle"></i>
+          Create New Application
+        </h2>
+        <button class="close-btn" (click)="closeCreateModal()">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="appName">
+            Application Name <span class="required">*</span>
+          </label>
+          <input
+            id="appName"
+            type="text"
+            class="form-control"
+            [class.is-invalid]="createErrors.name"
+            [(ngModel)]="newApplication.name"
+            placeholder="Enter application name"
+            autocomplete="off"
+          />
+          <div *ngIf="createErrors.name" class="error-message">
+            {{ createErrors.name }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="appVersion">
+            Version <span class="required">*</span>
+          </label>
+          <input
+            id="appVersion"
+            type="text"
+            class="form-control"
+            [class.is-invalid]="createErrors.version"
+            [(ngModel)]="newApplication.version"
+            placeholder="Enter version (e.g., 1.0.0)"
+            autocomplete="off"
+          />
+          <div *ngIf="createErrors.version" class="error-message">
+            {{ createErrors.version }}
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeCreateModal()">
+          <i class="fa fa-times"></i> Cancel
+        </button>
+        <button class="btn btn-primary" (click)="createApplication()" [disabled]="isLoading">
+          <i class="fa fa-check" [class.fa-spin]="isLoading"></i>
+          {{ isLoading ? 'Creating...' : 'Create Application' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Instances Modal -->
+  <div class="modal-overlay" *ngIf="showInstancesModal" (click)="closeInstancesModal()">
+    <div class="modal-content large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>
+          <i class="fa fa-server"></i>
+          Application Instances
+          <span class="app-badge" *ngIf="selectedApplication">
+            {{ selectedApplication.name }} v{{ selectedApplication.version }}
+          </span>
+        </h2>
+        <button class="close-btn" (click)="closeInstancesModal()">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div *ngIf="selectedInstances.length === 0" class="empty-state">
+          <i class="fa fa-inbox"></i>
+          <p>No instances found for this application.</p>
+        </div>
+
+        <div *ngIf="selectedInstances.length > 0" class="instances-list">
+          <div class="instance-card" *ngFor="let instance of selectedInstances; let i = index">
+            <div class="instance-header">
+              <div class="instance-info">
+                <span class="instance-number">#{{ i + 1 }}</span>
+                <div class="instance-details">
+                  <div class="instance-id">
+                    <i class="fa fa-fingerprint"></i>
+                    <span>{{ instance.id }}</span>
+                  </div>
+                  <div class="instance-date">
+                    <i class="fa fa-calendar"></i>
+                    Created: {{ instance.creationDate | date:'medium' }}
+                  </div>
+                </div>
+              </div>
+              <div class="instance-actions">
+                <button
+                  class="btn btn-sm btn-primary"
+                  (click)="viewInstanceHttpRequests(instance.id)"
+                  title="View HTTP Requests"
+                >
+                  <i class="fa fa-search"></i> View Requests
+                </button>
+                <button
+                  class="btn btn-sm btn-danger"
+                  (click)="deleteInstance(instance.id)"
+                  title="Delete Instance"
+                  [disabled]="isLoading"
+                >
+                  <i class="fa fa-trash"></i> Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeInstancesModal()">
+          <i class="fa fa-times"></i> Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div class="modal-overlay" *ngIf="showErrorModal" (click)="closeErrorModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+        <h2>
+          <i class="fa fa-exclamation-triangle"></i>
+          {{ errorTitle }}
+        </h2>
+        <button class="close-btn" (click)="closeErrorModal()">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div style="padding: 20px; text-align: center;">
+          <i class="fa fa-exclamation-circle" style="font-size: 64px; color: #dc3545; margin-bottom: 20px;"></i>
+          <p style="font-size: 16px; line-height: 1.6; color: #333; white-space: pre-line;">
+            {{ errorMessage }}
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeErrorModal()">
+          <i class="fa fa-times"></i> Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="spinner">
+      <i class="fa fa-spinner fa-spin"></i>
+      <p>Loading...</p>
+    </div>
+  </div>
+</div>
