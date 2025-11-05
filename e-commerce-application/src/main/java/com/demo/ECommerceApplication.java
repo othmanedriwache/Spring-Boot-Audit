@@ -10,10 +10,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ComponentScan(basePackages = {"com.demo","com.auditWriter"})
 @EnableJpaRepositories(basePackages = {"com.demo","com.auditWriter"})
 @EntityScan(basePackages = {"com.demo","com.auditWriter"})
-public class SpringBootDemo {
+public class ECommerceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringBootDemo.class, args);
+		SpringApplication.run(ECommerceApplication.class, args);
 	}
 
 }
