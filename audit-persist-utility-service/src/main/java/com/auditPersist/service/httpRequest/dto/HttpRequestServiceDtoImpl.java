@@ -114,6 +114,8 @@ public class HttpRequestServiceDtoImpl extends HttpRequestServiceImpl implements
                         })
                         .collect(Collectors.toList());
         searchableFields.add(new SearchableField("applicationName", "APPLICATION_NAME_TYPE"));
+        searchableFields.add(new SearchableField("applicationVersion", "APPLICATION_VERSION_TYPE"));
+
 
         return searchableFields;
     }

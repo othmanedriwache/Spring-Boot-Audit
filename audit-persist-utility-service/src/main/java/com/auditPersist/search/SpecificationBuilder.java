@@ -128,8 +128,9 @@ public class SpecificationBuilder {
         if (!getSimpleOperationSet().get(searchableField.getType()).contains(searchCriteria.getOperation()))
             return new CriteriaInvalid(searchCriteria.getFilterKey(), OPERATION_NOT_ALLOWED_WITH_THIS_FIELD_TYPE, getSimpleOperationSet().get(searchableField.getType()));
 
-        // Skip type conversion for custom operations like APPLICATION_NAME
-        if (!"APPLICATION_NAME_TYPE".equals(searchableField.getType())) {
+        // Skip type conversion for custom operations like APPLICATION_NAME and APPLICATION_VERSION
+        if (!"APPLICATION_NAME_TYPE".equals(searchableField.getType()) &&
+                !"APPLICATION_VERSION_TYPE".equals(searchableField.getType())) {
             try {
                 convertValueWithCorespondentType(searchCriteria.getValue(), searchableField);
             } catch (Exception e){

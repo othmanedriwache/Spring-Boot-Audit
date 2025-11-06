@@ -58,9 +58,9 @@
           <span *ngIf="isNumericField() && selectedField === 'duration'" class="field-hint">(in ms)</span>
         </label>
 
-        <!-- Text input for String, Table, and Application Name types -->
+        <!-- Text input for String, Table, Application Name, and Application Version types -->
         <input
-          *ngIf="isStringField() || selectedField === 'applicationInstance' || selectedField === 'applicationName'"
+          *ngIf="isStringField() || selectedField === 'applicationInstance' || selectedField === 'applicationName' || selectedField === 'applicationVersion'"
           id="searchValue"
           type="text"
           class="form-control"
