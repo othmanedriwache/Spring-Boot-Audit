@@ -72,6 +72,11 @@ public class SearchQueryBuilder <ENTITY>   implements Specification<ENTITY> {
                 Join<Object, Object> instanceJoin = root.join("applicationInstance");
                 Join<Object, Object> appJoin = instanceJoin.join("application");
                 return cb.equal(appJoin.get("name"), strToSearch);
+
+            case APPLICATION_VERSION:
+                Join<Object, Object> instanceJoinVer = root.join("applicationInstance");
+                Join<Object, Object> appJoinVer = instanceJoinVer.join("application");
+                return cb.equal(appJoinVer.get("version"), strToSearch);
         }
         return null;
     }
