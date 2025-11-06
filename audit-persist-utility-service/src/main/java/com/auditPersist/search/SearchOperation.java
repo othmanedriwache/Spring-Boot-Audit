@@ -10,7 +10,7 @@ public enum SearchOperation {
     @Enumerated(EnumType.STRING)
     CONTAINS, DOES_NOT_CONTAIN, EQUAL, NOT_EQUAL, BEGINS_WITH, DOES_NOT_BEGIN_WITH, ENDS_WITH,
     DOES_NOT_END_WITH, NUL, NOT_NULL, GREATER_THAN, GREATER_THAN_EQUAL, LESS_THAN, LESS_THAN_EQUAL,
-    ANY, ALL, JOIN_TABLE, APPLICATION_NAME;
+    ANY, ALL, JOIN_TABLE, APPLICATION_NAME, APPLICATION_VERSION;
 
     public static final Map<String, List<String>> SIMPLE_OPERATION_SET = initOperationMapper();
 
@@ -43,6 +43,7 @@ public enum SearchOperation {
             case "LESS_THAN_EQUAL": return LESS_THAN_EQUAL;
             case "JOIN_TABLE": return JOIN_TABLE;
             case "APPLICATION_NAME": return APPLICATION_NAME;
+            case "APPLICATION_VERSION": return APPLICATION_VERSION;
             default: return null;
         }
     }
@@ -67,6 +68,9 @@ public enum SearchOperation {
 
         operations = Collections.singletonList("APPLICATION_NAME");
         operationsByType.put("APPLICATION_NAME_TYPE", operations);
+
+        operations = Collections.singletonList("APPLICATION_VERSION");
+        operationsByType.put("APPLICATION_VERSION_TYPE", operations);
 
         return operationsByType;
     }
