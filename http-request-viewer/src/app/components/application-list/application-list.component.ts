@@ -437,10 +437,11 @@ export class ApplicationListComponent implements OnInit {
   }
 
   viewApplicationHttpRequests(application: Application): void {
-    // Navigate with the application name to filter by APPLICATION_NAME operation
+    // Navigate with the application name AND version to filter by both
     this.router.navigate(['/http-requests'], {
       queryParams: {
         applicationName: application.name,
+        applicationVersion: application.version,
         filterByName: 'true'
       }
     });

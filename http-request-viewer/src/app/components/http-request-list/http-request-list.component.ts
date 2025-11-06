@@ -301,6 +301,10 @@ export class HttpRequestListComponent implements OnInit {
     { value: 'APPLICATION_NAME', label: 'Application Name' }
   ];
 
+  applicationVersionOperations = [
+    { value: 'APPLICATION_VERSION', label: 'Application Version' }
+  ];
+
   operations: any[] = [];
 
   readonly MAX_INTEGER_VALUE = 2147483647;
@@ -320,7 +324,18 @@ export class HttpRequestListComponent implements OnInit {
     };
 
     this.activeFilters.push(newFilter);
-    this.searchHttpRequests();
+    // Don't call searchHttpRequests here - let caller decide
+  }
+
+  addApplicationVersionFilter(applicationVersion: string): void {
+    const newFilter: SearchCriteria = {
+      filterKey: 'applicationVersion',
+      operation: 'APPLICATION_VERSION',
+      value: applicationVersion
+    };
+
+    this.activeFilters.push(newFilter);
+    // Don't call searchHttpRequests here - let caller decide
   }
 
   addApplicationInstanceFilter(instanceId: string): void {
@@ -339,6 +354,7 @@ export class HttpRequestListComponent implements OnInit {
 
     this.route.queryParams.subscribe(params => {
       const applicationName = params['applicationName'];
+      const applicationVersion = params['applicationVersion'];
       const applicationInstanceId = params['applicationInstanceId'];
       const filterByName = params['filterByName'];
 
@@ -350,7 +366,16 @@ export class HttpRequestListComponent implements OnInit {
         if (applicationInstanceId) {
           this.addApplicationInstanceFilter(applicationInstanceId);
         } else if (filterByName === 'true' && applicationName) {
+          // Add application name filter
           this.addApplicationNameFilter(applicationName);
+
+          // Add version filter if provided
+          if (applicationVersion) {
+            this.addApplicationVersionFilter(applicationVersion);
+          }
+
+          // Call search ONCE after adding both filters
+          this.searchHttpRequests();
         } else {
           this.searchHttpRequests();
         }
@@ -389,6 +414,9 @@ export class HttpRequestListComponent implements OnInit {
       } else if (field.key === 'applicationName') {
         this.operations = this.applicationNameOperations;
         this.selectedOperation = 'APPLICATION_NAME';
+      } else if (field.key === 'applicationVersion') {
+        this.operations = this.applicationVersionOperations;
+        this.selectedOperation = 'APPLICATION_VERSION';
       } else if (field.type === 'int' || field.type === 'Integer' || field.type === 'LocalDateTime') {
         this.operations = this.numericOperations;
         this.selectedOperation = 'EQUAL';
@@ -414,7 +442,8 @@ export class HttpRequestListComponent implements OnInit {
     return this.currentFieldType === 'string' ||
       (!this.isDateTimeField() && !this.isNumericField() &&
         this.selectedField !== 'applicationInstance' &&
-        this.selectedField !== 'applicationName');
+        this.selectedField !== 'applicationName' &&
+        this.selectedField !== 'applicationVersion');
   }
 
   validateSearchValue(): boolean {
@@ -568,7 +597,8 @@ export class HttpRequestListComponent implements OnInit {
       ...this.stringOperations,
       ...this.numericOperations,
       ...this.tableOperations,
-      ...this.applicationNameOperations
+      ...this.applicationNameOperations,
+      ...this.applicationVersionOperations
     ];
     const op = allOps.find(o => o.value === operation);
     return op ? op.label : operation;
