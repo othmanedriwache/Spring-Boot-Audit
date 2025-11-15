@@ -29,7 +29,7 @@ audit:
   component: true          # IS COMPONENT ARE AUDITABLE
   strategy: logFile
   async : true
-  application-name: e-commerce
+  application-name: e-logFile
   application-version: 1.0.0
 
 
