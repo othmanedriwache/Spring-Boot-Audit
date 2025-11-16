@@ -67,9 +67,15 @@ public class UserService {
     }
 
     // Non-auditable function - will NOT be logged
-    @NotAuditableFunction
-    public List<User> getAllUsers() {
+
+    public List<User> getAllUsers() throws InterruptedException {
+        self.internalHelper();
         return userRepository.findAll();
+    }
+
+
+    public void internalHelper() throws InterruptedException {
+        Thread.sleep(300); // This won't be logged
     }
 
     // Auditable function that calls non-auditable function (mixed scenario)
@@ -91,7 +97,7 @@ public class UserService {
     // Auditable function with validation
     public void validateUserData(User user) {
         if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
-            throw new IllegalArgumentException("Username cannot be empty");
+            int a = 5/0;
         }
         if (user.getEmail() == null || !user.getEmail().contains("@")) {
             throw new IllegalArgumentException("Invalid email format");

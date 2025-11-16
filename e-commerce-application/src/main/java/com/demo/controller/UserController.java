@@ -37,7 +37,7 @@ public class UserController {
 
     // GET all users
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<User>> getAllUsers() throws InterruptedException {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
@@ -168,7 +168,7 @@ public class UserController {
     public ResponseEntity<List<User>> filterUsers(
             @RequestParam(required = false) User.UserStatus status,
             @RequestParam(required = false) User.UserRole role,
-            @RequestParam(required = false) String searchTerm) {
+            @RequestParam(required = false) String searchTerm) throws InterruptedException {
         
         List<User> users;
         

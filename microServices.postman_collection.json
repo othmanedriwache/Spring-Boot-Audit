@@ -1,0 +1,485 @@
+{
+	"info": {
+		"_postman_id": "c97b563a-4470-468f-9338-de725be89813",
+		"name": "microServices",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32054593"
+	},
+	"item": [
+		{
+			"name": "Audit",
+			"item": [
+				{
+					"name": "application/create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "UNIQUE_REQUEST_ID",
+								"value": "dddd",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"fileApplicationName\",\r\n    \"version\":\"fileApplicationVersion\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/common-services/v1/application/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"common-services",
+								"v1",
+								"application",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "import",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "UNIQUE_REQUEST_ID",
+								"value": "dddd",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/logs/application.log"
+								},
+								{
+									"key": "applicationName",
+									"value": "fileApplicationName",
+									"type": "text"
+								},
+								{
+									"key": "applicationVersion",
+									"value": "fileApplicationVersion",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/common-services/v1/audit/import",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"common-services",
+								"v1",
+								"audit",
+								"import"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Applications With Instances",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/common-services/v1/application/all-with-instances",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"common-services",
+								"v1",
+								"application",
+								"all-with-instances"
+							]
+						},
+						"description": "Retrieves all applications with their instances"
+					},
+					"response": []
+				},
+				{
+					"name": "Clean Application",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"app-id-here\",\n    \"name\": \"MyApplication\",\n    \"version\": \"1.0.0\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/common-services/v1/application/clean",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"common-services",
+								"v1",
+								"application",
+								"clean"
+							]
+						},
+						"description": "Cleans application logs by passing the full Application object"
+					},
+					"response": []
+				},
+				{
+					"name": "Clean Application By ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/common-services/v1/application/cleanById/:applicationInstanceId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"common-services",
+								"v1",
+								"application",
+								"cleanById",
+								":applicationInstanceId"
+							],
+							"variable": [
+								{
+									"key": "applicationInstanceId",
+									"value": "f6e5222d-b044-4d5a-ae8f-1df39eab6224",
+									"description": "The application instance ID"
+								}
+							]
+						},
+						"description": "Cleans application logs by application instance ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Clean Application By ID Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/common-services/v1/application/cleanById/:applicationInstanceId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"common-services",
+								"v1",
+								"application",
+								"cleanById",
+								":applicationInstanceId"
+							],
+							"variable": [
+								{
+									"key": "applicationInstanceId",
+									"value": "f6e5222d-b044-4d5a-ae8f-1df39eab6224",
+									"description": "The application instance ID"
+								}
+							]
+						},
+						"description": "Cleans application logs by application instance ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Clean Application By Name and Version",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/common-services/v1/application/cleanByNameAndVersion/:applicationName/:applicationVersion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"common-services",
+								"v1",
+								"application",
+								"cleanByNameAndVersion",
+								":applicationName",
+								":applicationVersion"
+							],
+							"variable": [
+								{
+									"key": "applicationName",
+									"value": "databaseApplicationName",
+									"description": "The application name"
+								},
+								{
+									"key": "applicationVersion",
+									"value": "databaseApplicationVersion",
+									"description": "The application version"
+								}
+							]
+						},
+						"description": "Cleans application logs by application name and version"
+					},
+					"response": []
+				},
+				{
+					"name": "search by applicationInstance",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "UNIQUE_REQUEST_ID",
+								"value": "dddd",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"dataOption\": \"asc\",\r\n    \"searchCriteriaList\": [\r\n        {\r\n            \"filterKey\": \"applicationInstance\",\r\n            \"operation\": \"JOIN_TABLE\",\r\n            \"value\": \"3cf6f38d-a99c-4a62-b237-ff069534ba9a\",\r\n            \"sortAction\": \"ASC\",\r\n            \"dataOption\": \"all\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/common-services/v1/httpRequest/search",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"common-services",
+								"v1",
+								"httpRequest",
+								"search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search by field",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "UNIQUE_REQUEST_ID",
+								"value": "dddd",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"dataOption\": \"asc\",\r\n    \"searchCriteriaList\": [\r\n        {\r\n            \"filterKey\": \"url\",\r\n            \"operation\": \"CONTAINS\",\r\n            \"value\": \"a\",\r\n            \"sortAction\": \"ASC\",\r\n            \"dataOption\": \"all\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/common-services/v1/httpRequest/search",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"common-services",
+								"v1",
+								"httpRequest",
+								"search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search by APPLICATION_NAME",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "UNIQUE_REQUEST_ID",
+								"value": "dddd",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"dataOption\": \"ALL\",\r\n    \"searchCriteriaList\": [\r\n        {\r\n            \"filterKey\": \"applicationName\",\r\n            \"operation\": \"APPLICATION_NAME\",\r\n            \"value\": \"databaseApplicationName\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/common-services/v1/httpRequest/search",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"common-services",
+								"v1",
+								"httpRequest",
+								"search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getHttpRequestSearchableFields",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "UNIQUE_REQUEST_ID",
+								"value": "dddd",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/common-services/v1/httpRequest/getHttpRequestSearchableFields",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"common-services",
+								"v1",
+								"httpRequest",
+								"getHttpRequestSearchableFields"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAsTree",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "UNIQUE_REQUEST_ID",
+								"value": "dddd",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"dataOption\": \"asc\",\r\n    \"searchCriteriaList\": [\r\n        {\r\n            \"filterKey\": \"url\",\r\n            \"operation\": \"CONTAINS\",\r\n            \"value\": \"test_exception\",\r\n            \"sortAction\": \"ASC\",\r\n            \"dataOption\": \"all\"\r\n        },\r\n         {\r\n            \"filterKey\": \"status\",\r\n            \"operation\": \"EQUAL\",\r\n            \"value\": \"400\",\r\n            \"sortAction\": \"ASC\",\r\n            \"dataOption\": \"all\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/common-services/v1/httpRequest/getAsTree?id=55e43722-813f-47b4-9b14-352b7ab6af5b",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"common-services",
+								"v1",
+								"httpRequest",
+								"getAsTree"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "55e43722-813f-47b4-9b14-352b7ab6af5b"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "UNIQUE_REQUEST_ID",
+								"value": "dddd",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/common-services/v1/httpRequest/get?id=93ff32e5-5ae0-4d2d-8e3c-6132e5a267af",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"common-services",
+								"v1",
+								"httpRequest",
+								"get"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "93ff32e5-5ae0-4d2d-8e3c-6132e5a267af"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
